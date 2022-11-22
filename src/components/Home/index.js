@@ -2,46 +2,52 @@ import React from 'react'
 
 
 function Users() {
-  const [inputValue, setInputValue]=React.useState();
   const [users, setUsers] = React.useState([]);
-  const [loading, setLoading] = React.useState(false);
-  const showUser = () => {
-    setLoading(true)
-      fetch("https://SECRET.mockapi.io/users").then((response) => 
-        response.json()).then((user) => {
-          setUsers(user);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [clicked, setClicked] = React.useState(false);
+
+  const handleClick = React.useCallback(() => {
+      setIsLoading(true);
+      fetch("https://SECRET.mockapi.io").then((response) => response.json()
+      )
+      .then((data) => {
+          setUsers(data);
+
+      }).catch(() => {
+          console.log("error");
+
+      }).finally(() => {
+          setIsLoading(false);
+      })
+
+      setClicked(true);
+
+  }, []);
+
+  const FilteredData = React.useMemo(() => {
+      let test = [];
+      if (users) {
+          test = users;
+      }   
+      return test;
+
+  }, [users, clicked]);
 
 
-        }).finally(() => {
-    setLoading(false)
-  })
-    
-  
-  }
-  const info = (e) => {
-    const { value } = e.target;
-    setInputValue(value);
-  }
-  
-  
   return (
-    <>
-      <input placeholder='name' onChange={info}></input>
-      <button onClick={showUser}>input</button>
-      {loading ? <h1 className='load'>Loading....</h1> : 
-       <div>
-        {users.map(({name,id}) => (
-          <h5 className='user' key={id}>
-           {id}  {name} 
-          </h5>
-        ))}
-   
-        </div>
-      } 
-    
-    </>
- 
+      <div>
+          <button onClick={handleClick}>Daxil ol</button>
+          {isLoading ? 
+          
+          (<h5>Loading</h5>) :
+             
+          (FilteredData.map(({ name,  age,id }) => (
+                  <h5 key={id}>  id :{id} name:{name} age: {age}</h5>
+              ))
+              )}
+      </div>
   );
 }
 
-export default Users
+export default Users;
+
